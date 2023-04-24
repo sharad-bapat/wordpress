@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Interesting</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        #container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            text-overflow: ellipsis;
+
+        }
+
+        .article {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            text-overflow: ellipsis;
+        }
+
+        img {
+            height: 50vh;
+            width: auto;
+            background-size: cover;
+            background-position: top;
+            object-fit: cover;
+            vertical-align: top;
+            /* margin: 3px;
+            border: 2px solid black; */
+        }
+
+        .article-details {
+            height: 50vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 10px;
+
+        }
+
+        .article-title {
+            font-size: 72px;
+            font-weight: bold;
+            margin-top: 30px;
+            margin-bottom: 10px;
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+
+        .article-excerpt {
+            font-size: 64px;
+            padding-left: 20px;
+            padding-right: 20px;
+            text-overflow: ellipsis;
+        }
+
+
+        .article-content {
+            font-size: 64px;
+            padding-left: 20px;
+            padding-right: 20px;
+            height: 100vh;
+            overflow-y: scroll !important;
+        }
+
+        .article-content figure {
+            object-fit: contain;
+            max-width: 100vw !important;
+        }
+
+        .article-content video {
+            object-fit: contain;
+            max-width: 100vw !important;
+        }
+
+        .article-content img {
+            object-fit: contain;
+            max-width: 100vw !important;
+        }
+
+        .article-domain {
+            padding: 10px;
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        p {
+            text-overflow: ellipsis;
+
+        }
+
+        .scrollable-div {
+            overflow-y: scroll !important;
+        }
+
+        /* .article-date {
+            padding: 10px;
+            font-size: 1rem;    
+            font-style: italic;
+        } */
+    </style>
+</head>
+
+<body>
+    <div id="container"></div>
+
+    <script>
+        const numArticle = 5;
+        let articles = [];
+        // Display an article
+        function showArticle(index) {
+            articles = articles.sort(function (a, b) {
+                return new Date(b.date_gmt).getTime() - new Date(a.date_gmt).getTime();
+            });
+            // console.log(articles);
+            const article = articles[index];
+            const div = document.createElement('div');
+            div.className = 'article';
+
+            //image
+            const img = document.createElement('img');
+            if (article._embedded && article._embedded['wp:featuredmedia']) {
+                img.src = article._embedded['wp:featuredmedia'][0].source_url;
+            } else {
+                img.src = 'wp.png';
+            }
+
+            // console.log(article._embedded['wp:featuredmedia'][0].source_url)
+            // img.src = article._embedded['wp:featuredmedia'][0].source_url;
+            img.alt = 'Image';
+            img.className = 'article-img';
+            img.onerror = function () {
+                img.src = 'wp.png'; // Replace with path to your default image
+            }
+
+            const domain = document.createElement('div');
+            const url = new URL(article.link);
+            const domainName = url.hostname;
+            domain.innerHTML = `<p style="font-size: 56px; color:blue; margin-left:15px">${domainName}</p>`;
+
+            //title
+            const title = document.createElement('div');
+            title.className = 'article-title';
+            title.innerHTML = article.title.rendered;
+
+            //excerpt
+
+            const excerpt = document.createElement('div');
+            excerpt.className = 'article-excerpt';
+            excerpt.innerHTML = article.excerpt.rendered;
+
+
+            div.appendChild(img);
+            div.appendChild(domain);
+            div.appendChild(title);
+            div.appendChild(excerpt);
+
+            container.innerHTML = '';
+            container.appendChild(div);
+        }
+
+        function showArticleDetails(index) {
+            const article = articles[index];
+            const div = document.createElement('div');
+            div.className = 'article';
+
+            //content
+
+            const excerpt = document.createElement('div');
+            excerpt.className = 'article-content';
+            excerpt.innerHTML = article.content.rendered;
+
+            div.appendChild(excerpt);
+
+            container.innerHTML = '';
+            container.appendChild(div);
+
+        }
+
+        const urls = [
+            `https://www.mansworldindia.com/wp-json/wp/v2/posts?_embed&per_page=${numArticle}&context=view`,
+            `https://womansera.com/wp-json/wp/v2/posts?_embed&per_page=${numArticle}&context=view`,
+            `https://time.com/wp-json/wp/v2/posts?_embed&per_page=${numArticle}&context=view`,
+            `https://telanganatoday.com/wp-json/wp/v2/posts?_embed&per_page=${numArticle}&context=view`,
+            `https://techcrunch.com/wp-json/wp/v2/posts?_embed&per_page=${numArticle}&context=view`,
+            `https://wired.com/wp-json/wp/v2/posts?_embed&per_page=${numArticle}&context=view`,
+            `https://observer.com/wp-json/wp/v2/posts?_embed&per_page=${numArticle}&context=view`,
+            `https://variety.com/wp-json/wp/v2/posts?_embed&per_page=${numArticle}&context=view`,
+            `https://www.thesun.co.uk/wp-json/wp/v2/posts?_embed&per_page=${numArticle}&context=view`,
+            `https://o.canada.com/wp-json/wp/v2/posts?_embed&per_page=${numArticle}&context=view`,
+            `https://9to5mac.com/wp-json/wp/v2/posts?_embed&per_page=${numArticle}&context=view`,
+            `https://metro.co.uk/wp-json/wp/v2/posts?_embed&context=view&per_page=${numArticle}`,
+            `https://boingboing.net/wp-json/wp/v2/posts?_embed&context=view&per_page=${numArticle}`,
+            `https://blog.ted.com/wp-json/wp/v2/posts?_embed&context=view&per_page=${numArticle}`,
+            `https://blog.mozilla.org/en/wp-json/wp/v2/posts?_embed&context=view&per_page=${numArticle}`,
+            `https://news.harvard.edu/gazette/wp-json/wp/v2/posts?_embed&context=view&per_page=${numArticle}`,
+            `https://rd.com/wp-json/wp/v2/posts?_embed&per_page=${numArticle}&context=view`,
+            `https://thehustle.co/wp-json/wp/v2/posts?_embed&per_page=${numArticle}&context=view`,
+            `https://a16z.com/wp-json/wp/v2/posts?_embed&per_page=${numArticle}&context=view`,
+            `https://www.dancemagazine.com/wp-json/wp/v2/posts?_embed&per_page=${numArticle}&context=view`,
+            `https://www.lithub.com/wp-json/wp/v2/posts?_embed&per_page=${numArticle}&context=view`,
+            `https://stereogum.com/wp-json/wp/v2/posts?_embed&per_page=${numArticle}&context=view`,
+            `https://rollingstone.com/wp-json/wp/v2/posts?_embed&per_page=${numArticle}&context=view`,
+            `https://www.foreignpolicy.com/wp-json/wp/v2/posts?_embed&per_page=${numArticle}&context=view`,
+            `https://www.technologyreview.com/wp-json/wp/v2/posts?_embed&per_page=${numArticle}&context=view`,
+            `https://reallifemag.com/wp-json/wp/v2/posts/?_embed&per_page=${numArticle}&context=view`,
+            `https://popsci.com/wp-json/wp/v2/posts/?_embed&per_page=${numArticle}&context=view`,
+            `https://harpers.org/wp-json/wp/v2/posts?_embed&per_page=${numArticle}&context=view`,
+            `https://www.champak.in/wp-json/wp/v2/posts?_embed&per_page=${numArticle}&context=view`,
+            `https://womansera.com/wp-json/wp/v2/posts?_embed&per_page=${numArticle}&context=view`,
+            `http://tehelkahindi.com/wp-json/wp/v2/posts?_embed&per_page=${numArticle}&context=view`,
+            `https://www.todaystraveller.net/wp-json/wp/v2/posts?_embed&per_page=${numArticle}&context=view`,
+            `http://tinkle.in/wp-json/wp/v2/posts?_embed&per_page=${numArticle}&context=view`,
+            `https://openthemagazine.com/wp-json/wp/v2/posts?_embed&per_page=${numArticle}&context=view`,
+            `https://newwomanindia.com/wp-json/wp/v2/posts?_embed&per_page=${numArticle}&context=view`,
+            `https://www.dqindia.com/wp-json/wp/v2/posts?_embed&per_page=${numArticle}&context=view`,
+            `http://www.ctoforum.org/wp-json/wp/v2/posts?_embed&per_page=${numArticle}&context=view`,
+            `https://www.grihshobha.in/wp-json/wp/v2/posts?_embed&per_page=${numArticle}&context=view`,
+            `https://www.merisaheli.com/wp-json/wp/v2/posts?_embed&per_page=${numArticle}&context=view`,
+            `https://www.sarassalil.in/wp-json/wp/v2/posts?_embed&per_page=${numArticle}&context=view`,
+            `https://www.sarita.in/wp-json/wp/v2/posts?_embed&per_page=${numArticle}&context=view`,
+            `https://www.usmagazine.com/wp-json/wp/v2/posts?_embed&per_page=${numArticle}&context=view`,
+            `https://www.mansworldindia.com/wp-json/wp/v2/posts?_embed&per_page=${numArticle}&context=view`,
+            `https://www.marieclaire.co.uk/wp-json/wp/v2/posts?_embed&per_page=${numArticle}&context=view`,
+            `https://www.historyextra.com/wp-json/wp/v2/posts?_embed&per_page=${numArticle}&context=view`,
+        ];
+
+        const results = [];
+
+        urls.forEach((url) => {
+            fetch(url)
+                .then((response) => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw new Error('Network response was not ok.');
+                    }
+                })
+                .then((data) => {
+                    results.push(...data);
+                })
+                .catch((error) => {
+                    // console.error('Error fetching data:', error);
+                });
+        });
+        Promise.allSettled(urls.map(url => fetch(url)))
+            .then((responses) => {
+                responses.forEach((response) => {
+                    if (response.status === 'fulfilled') {
+                        const responseData = response.value;
+                        if (Array.isArray(responseData)) {
+                            results.push(...responseData);
+                        } else if (typeof responseData === 'object' && responseData[Symbol.iterator]) {
+                            results.push(...responseData);
+                        } else {
+                            // console.error('Invalid response format:', responseData);
+                        }
+                    } else {
+                        // console.error('Error fetching data:', response.reason);
+                    }
+                });
+                articles = results;
+                // console.log(articles); // combined array          
+                // Display the first article
+                showArticle(0);
+                let currentIndex = 0;
+
+                let touchStartX = 0;
+                let touchStartY = 0;
+                let touchEndX = 0;
+                let touchEndY = 0;
+
+                document.addEventListener('touchstart', function (event) {
+                    touchStartX = event.touches[0].clientX;
+                    touchStartY = event.touches[0].clientY;
+                });
+
+                document.addEventListener('touchend', function (event) {
+                    touchEndX = event.changedTouches[0].clientX;
+                    touchEndY = event.changedTouches[0].clientY;
+
+                    // calculate swipe direction
+                    let deltaX = touchEndX - touchStartX;
+                    let deltaY = touchEndY - touchStartY;
+
+                    // check which direction has greater distance and use that as the swipe direction
+                    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                        if (deltaX > 0) {
+                            console.log('swipe right');
+                            showArticle(currentIndex);
+                        } else {
+                            console.log('swipe left');
+                            // window.location.href = getLink(currentIndex);
+                            showArticleDetails(currentIndex);
+                        }
+                    } else {
+                        if (deltaY > 0) {
+                            console.log('swipe down');
+                            const element = document.querySelector('.article-content');
+                            if (!element) {
+                                if (currentIndex > 0) {
+                                    currentIndex--;
+                                    showArticle(currentIndex);
+                                }
+                            }
+                        } else {
+                            console.log('swipe up');
+                            const element = document.querySelector('.article-content');
+                            if (!element) {
+                                if (currentIndex < articles.length - 1) {
+                                    currentIndex++;
+                                    showArticle(currentIndex);
+                                } else {
+                                    container.innerHTML = `<div style="text-align: center;display:flex; justify-content:center;align-items:center;font-size:48px;height: 100vh;" >No more articles</div>`;
+                                }
+                            }
+                        }
+                    }
+                });
+                // console.log("First Time" + articles); // combined array
+            });
+
+
+
+    </script>
+</body>
+
+</html>
